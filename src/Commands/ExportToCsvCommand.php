@@ -34,22 +34,22 @@ class ExportToCsvCommand extends Command
 
         $langPath = lang_path();
 
-        if ( ! File::isDirectory($langPath)) {
+        if (! File::isDirectory($langPath)) {
             $this->error("The lang directory does not exist at {$langPath}");
 
             return self::FAILURE;
         }
 
-        $allOption     = $this->option('all');
+        $allOption = $this->option('all');
         $localesOption = $this->option('locales');
-        $locales       = $localesOption
+        $locales = $localesOption
             ? explode(',', $localesOption)
             : [config('app.locale')];
 
         $locales = array_map('trim', $locales);
 
         $files = File::allFiles($langPath);
-        $data  = [['Path', 'Key', 'Original', 'New']];
+        $data = [['Path', 'Key', 'Original', 'New']];
 
         foreach ($files as $file) {
             if ($file->getExtension() !== 'php') {
@@ -57,7 +57,7 @@ class ExportToCsvCommand extends Command
             }
 
             $relativePath = $file->getRelativePathname();
-            $segments     = explode(DIRECTORY_SEPARATOR, $relativePath);
+            $segments = explode(DIRECTORY_SEPARATOR, $relativePath);
 
             if ($segments[0] === 'vendor') {
                 $fileLocale = $segments[2] ?? null;
@@ -65,7 +65,7 @@ class ExportToCsvCommand extends Command
                 $fileLocale = $segments[0] ?? null;
             }
 
-            if ( ! $allOption && $fileLocale && ! in_array($fileLocale, $locales)) {
+            if (! $allOption && $fileLocale && ! in_array($fileLocale, $locales)) {
                 continue;
             }
 
@@ -75,26 +75,27 @@ class ExportToCsvCommand extends Command
                 $translations = File::getRequire($file->getPathname());
             } catch (\Exception $e) {
                 $this->warn("Could not load translation file: {$file->getPathname()}");
+
                 continue;
             }
 
-            if ( ! is_array($translations)) {
+            if (! is_array($translations)) {
                 continue;
             }
 
             $dotTranslations = Arr::dot($translations);
 
             foreach ($dotTranslations as $key => $value) {
-                if ( ! is_string($value) && ! is_numeric($value) && ! is_null($value)) {
+                if (! is_string($value) && ! is_numeric($value) && ! is_null($value)) {
                     continue;
                 }
 
-                $data[] = [$pathWithoutExtension, $key, (string)$value, ''];
+                $data[] = [$pathWithoutExtension, $key, (string) $value, ''];
             }
         }
 
         $directory = dirname($csvPath);
-        if ( ! File::isDirectory($directory)) {
+        if (! File::isDirectory($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
 

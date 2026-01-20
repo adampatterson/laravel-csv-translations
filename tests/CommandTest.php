@@ -9,16 +9,16 @@ uses(TestCase::class);
 it('can export translations to CSV', function () {
     // Setup: Create dummy translation files
     $langPath = lang_path();
-    if (!File::isDirectory($langPath)) {
+    if (! File::isDirectory($langPath)) {
         File::makeDirectory($langPath, 0755, true);
     }
 
-    $enPath = $langPath . '/en';
-    if (!File::isDirectory($enPath)) {
+    $enPath = $langPath.'/en';
+    if (! File::isDirectory($enPath)) {
         File::makeDirectory($enPath, 0755, true);
     }
 
-    File::put($enPath . '/auth.php', "<?php return ['failed' => 'Failed', 'nested' => ['key' => 'Value']];");
+    File::put($enPath.'/auth.php', "<?php return ['failed' => 'Failed', 'nested' => ['key' => 'Value']];");
 
     $csvPath = base_path('test_translations.csv');
 
@@ -42,23 +42,23 @@ it('can export translations to CSV', function () {
 
 it('can filter exported translations by locale', function () {
     $langPath = lang_path();
-    if (!File::isDirectory($langPath)) {
+    if (! File::isDirectory($langPath)) {
         File::makeDirectory($langPath, 0755, true);
     }
-    File::makeDirectory($langPath . '/en', 0755, true);
-    File::makeDirectory($langPath . '/fr', 0755, true);
-    File::makeDirectory($langPath . '/vendor/package/es', 0755, true);
+    File::makeDirectory($langPath.'/en', 0755, true);
+    File::makeDirectory($langPath.'/fr', 0755, true);
+    File::makeDirectory($langPath.'/vendor/package/es', 0755, true);
 
-    File::put($langPath . '/en/test.php', "<?php return ['hello' => 'Hello'];");
-    File::put($langPath . '/fr/test.php', "<?php return ['hello' => 'Bonjour'];");
-    File::put($langPath . '/vendor/package/es/test.php', "<?php return ['hello' => 'Hola'];");
+    File::put($langPath.'/en/test.php', "<?php return ['hello' => 'Hello'];");
+    File::put($langPath.'/fr/test.php', "<?php return ['hello' => 'Bonjour'];");
+    File::put($langPath.'/vendor/package/es/test.php', "<?php return ['hello' => 'Hola'];");
 
     $csvPath = base_path('filter_test.csv');
 
     // Test exporting only 'fr' and 'es'
     $this->artisan('translation:export', [
         'path' => $csvPath,
-        '--locales' => 'fr,es'
+        '--locales' => 'fr,es',
     ])->assertExitCode(0);
 
     $content = file_get_contents($csvPath);
@@ -73,20 +73,20 @@ it('can filter exported translations by locale', function () {
 
 it('can export all translations', function () {
     $langPath = lang_path();
-    if (!File::isDirectory($langPath)) {
+    if (! File::isDirectory($langPath)) {
         File::makeDirectory($langPath, 0755, true);
     }
-    File::makeDirectory($langPath . '/en', 0755, true);
-    File::makeDirectory($langPath . '/fr', 0755, true);
+    File::makeDirectory($langPath.'/en', 0755, true);
+    File::makeDirectory($langPath.'/fr', 0755, true);
 
-    File::put($langPath . '/en/test.php', "<?php return ['hello' => 'Hello'];");
-    File::put($langPath . '/fr/test.php', "<?php return ['hello' => 'Bonjour'];");
+    File::put($langPath.'/en/test.php', "<?php return ['hello' => 'Hello'];");
+    File::put($langPath.'/fr/test.php', "<?php return ['hello' => 'Bonjour'];");
 
     $csvPath = base_path('all_test.csv');
 
     $this->artisan('translation:export', [
         'path' => $csvPath,
-        '--all' => true
+        '--all' => true,
     ])->assertExitCode(0);
 
     $content = file_get_contents($csvPath);
@@ -100,14 +100,14 @@ it('can export all translations', function () {
 
 it('exports only base locale by default', function () {
     $langPath = lang_path();
-    if (!File::isDirectory($langPath)) {
+    if (! File::isDirectory($langPath)) {
         File::makeDirectory($langPath, 0755, true);
     }
-    File::makeDirectory($langPath . '/en', 0755, true);
-    File::makeDirectory($langPath . '/fr', 0755, true);
+    File::makeDirectory($langPath.'/en', 0755, true);
+    File::makeDirectory($langPath.'/fr', 0755, true);
 
-    File::put($langPath . '/en/test.php', "<?php return ['hello' => 'Hello'];");
-    File::put($langPath . '/fr/test.php', "<?php return ['hello' => 'Bonjour'];");
+    File::put($langPath.'/en/test.php', "<?php return ['hello' => 'Hello'];");
+    File::put($langPath.'/fr/test.php', "<?php return ['hello' => 'Bonjour'];");
 
     $csvPath = base_path('default_test.csv');
 
@@ -137,10 +137,10 @@ it('can import translations from CSV', function () {
         ->assertExitCode(0);
 
     $langPath = lang_path();
-    $this->assertFileExists($langPath . '/en/test.php');
-    $this->assertFileExists($langPath . '/vendor/package/en/modal.php');
+    $this->assertFileExists($langPath.'/en/test.php');
+    $this->assertFileExists($langPath.'/vendor/package/en/modal.php');
 
-    $testTranslations = include $langPath . '/en/test.php';
+    $testTranslations = include $langPath.'/en/test.php';
     expect($testTranslations)->toBe([
         'greeting' => 'Hello',
         'nested' => [
@@ -148,7 +148,7 @@ it('can import translations from CSV', function () {
         ],
     ]);
 
-    $vendorTranslations = include $langPath . '/vendor/package/en/modal.php';
+    $vendorTranslations = include $langPath.'/vendor/package/en/modal.php';
     expect($vendorTranslations)->toBe([
         'close' => 'Close',
     ]);
@@ -170,10 +170,10 @@ it('can import a specific locale', function () {
         ->assertExitCode(0);
 
     $langPath = lang_path();
-    $this->assertFileDoesNotExist($langPath . '/en/test.php');
-    $this->assertFileExists($langPath . '/fr/test.php');
+    $this->assertFileDoesNotExist($langPath.'/en/test.php');
+    $this->assertFileExists($langPath.'/fr/test.php');
 
-    $frTranslations = include $langPath . '/fr/test.php';
+    $frTranslations = include $langPath.'/fr/test.php';
     expect($frTranslations)->toBe(['greeting' => 'Bonjour']);
 
     // Cleanup
@@ -193,9 +193,9 @@ it('can import translations as JSON', function () {
         ->assertExitCode(0);
 
     $langPath = lang_path();
-    $this->assertFileExists($langPath . '/en.json');
+    $this->assertFileExists($langPath.'/en.json');
 
-    $jsonContent = File::get($langPath . '/en.json');
+    $jsonContent = File::get($langPath.'/en.json');
     $data = json_decode($jsonContent, true);
 
     expect($data)->toBe([

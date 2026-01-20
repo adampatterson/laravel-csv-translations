@@ -2,9 +2,9 @@
 
 namespace AdamPatterson\LaravelCsvTranslations\Tests;
 
+use AdamPatterson\LaravelCsvTranslations\LaravelCsvTranslationsServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use AdamPatterson\LaravelCsvTranslations\LaravelCsvTranslationsServiceProvider;
 
 class TestCase extends Orchestra
 {

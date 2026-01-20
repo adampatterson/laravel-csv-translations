@@ -32,7 +32,7 @@ class ImportFromCsvCommand extends Command
     {
         $csvPath = $this->argument('path') ?? config('csv-translations.export_path');
 
-        if ( ! File::exists($csvPath)) {
+        if (! File::exists($csvPath)) {
             $this->error("CSV file not found at {$csvPath}");
 
             return self::FAILURE;
@@ -73,7 +73,7 @@ class ImportFromCsvCommand extends Command
 
             $translation = ! empty($new) ? $new : $original;
 
-            if ( ! isset($output[$path])) {
+            if (! isset($output[$path])) {
                 $output[$path] = [];
             }
 
@@ -96,10 +96,10 @@ class ImportFromCsvCommand extends Command
 
     protected function saveAsPhp(string $path, array $translations): void
     {
-        $fullPath  = lang_path($path.'.php');
+        $fullPath = lang_path($path.'.php');
         $directory = dirname($fullPath);
 
-        if ( ! File::isDirectory($directory)) {
+        if (! File::isDirectory($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
 
@@ -111,10 +111,10 @@ class ImportFromCsvCommand extends Command
 
     protected function saveAsJson(string $path, array $translations): void
     {
-        $fullPath  = lang_path($path.'.json');
+        $fullPath = lang_path($path.'.json');
         $directory = dirname($fullPath);
 
-        if ( ! File::isDirectory($directory)) {
+        if (! File::isDirectory($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
 

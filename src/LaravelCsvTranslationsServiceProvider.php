@@ -2,10 +2,10 @@
 
 namespace AdamPatterson\LaravelCsvTranslations;
 
-use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 use AdamPatterson\LaravelCsvTranslations\Commands\ExportToCsvCommand;
 use AdamPatterson\LaravelCsvTranslations\Commands\ImportFromCsvCommand;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class LaravelCsvTranslationsServiceProvider extends PackageServiceProvider
 {

@@ -1,1 +1,5 @@
-<?php test('simple', function() { $this->assertTrue(true); });
+<?php
+
+test('simple', function () {
+    $this->assertTrue(true);
+});
