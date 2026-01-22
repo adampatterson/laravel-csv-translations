@@ -6,14 +6,14 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 
-class ImportFromCsvCommand extends Command
+class PullFromCsvCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'translation:import 
+    protected $signature = 'translation:pull 
                             {path? : The path to the CSV file} 
                             {--json : Export as JSON instead of PHP}
                             {--locale= : Import a specific locale}';
@@ -23,7 +23,7 @@ class ImportFromCsvCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Import translations from a CSV file';
+    protected $description = 'Create updated Laravel translations from a CSV file.';
 
     /**
      * Execute the console command.

@@ -6,14 +6,14 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 
-class ExportToCsvCommand extends Command
+class PushToCsvCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'translation:export 
+    protected $signature = 'translation:push 
                             {path? : The path to the CSV file}
                             {--l|locales= : Comma separated list of locales to export}
                             {--a|all : Export all locales}';
@@ -23,7 +23,7 @@ class ExportToCsvCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Export language files as a single CSV';
+    protected $description = 'Push all published translations to CSV file.';
 
     /**
      * Execute the console command.
@@ -90,7 +90,7 @@ class ExportToCsvCommand extends Command
                     continue;
                 }
 
-                $data[] = [$pathWithoutExtension, $key, (string) $value, ''];
+                $data[] = [$pathWithoutExtension, $key, (string)$value, ''];
             }
         }
 

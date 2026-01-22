@@ -43,10 +43,10 @@ return [
 
 ### Exporting Translations
 
-To export your translations to a CSV file, use the `translation:export` command:
+To export your translations to a CSV file, use the `translation:push` command:
 
 ```bash
-php artisan translation:export
+php artisan translation:push
 ```
 
 By default, this exports the base locale (defined in `config('app.locale')`) to the path specified in your config.
@@ -55,15 +55,15 @@ By default, this exports the base locale (defined in `config('app.locale')`) to 
 
 - **Specify Path**: Provide a path as an argument to change the output location.
   ```bash
-  php artisan translation:export custom/path/translations.csv
+  php artisan translation:push custom/path/translations.csv
   ```
 - **Export All Locales**: Use the `--all` (or `-a`) flag to export every locale found in your `lang` directory.
   ```bash
-  php artisan translation:export --all
+  php artisan translation:push --all
   ```
 - **Specific Locales**: Use the `--locales` (or `-l`) option with a comma-separated list.
   ```bash
-  php artisan translation:export --locales=en,fr,es
+  php artisan translation:push --locales=en,fr,es
   ```
 
 The CSV will contain the following columns:
@@ -74,10 +74,10 @@ The CSV will contain the following columns:
 
 ### Importing Translations
 
-To import translations from a CSV file, use the `translation:import` command:
+To import translations from a CSV file, use the `translation:pull` command:
 
 ```bash
-php artisan translation:import
+php artisan translation:pull
 ```
 
 The command will read the CSV and update your language files. If a value is present in the **New** column, it will be used; otherwise, the **Original** value is preserved.
@@ -86,15 +86,15 @@ The command will read the CSV and update your language files. If a value is pres
 
 - **Specify Path**: Provide the path to the CSV file as an argument.
   ```bash
-  php artisan translation:import custom/path/translations.csv
+  php artisan translation:pull custom/path/translations.csv
   ```
 - **Filter by Locale**: Import only a specific locale from the CSV.
   ```bash
-  php artisan translation:import --locale=fr
+  php artisan translation:pull --locale=fr
   ```
 - **Import as JSON**: Convert the translations into JSON files instead of PHP arrays.
   ```bash
-  php artisan translation:import --json
+  php artisan translation:pull --json
   ```
 
 ## Testing
