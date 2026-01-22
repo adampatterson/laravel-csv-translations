@@ -90,7 +90,7 @@ class PushToCsvCommand extends Command
                     continue;
                 }
 
-                $data[] = [$pathWithoutExtension, $key, (string)$value, ''];
+                $data[] = [$pathWithoutExtension, $key, (string) $value, ''];
             }
         }
 

@@ -2,8 +2,8 @@
 
 namespace AdamPatterson\LaravelCsvTranslations;
 
-use AdamPatterson\LaravelCsvTranslations\Commands\PushToCsvCommand;
 use AdamPatterson\LaravelCsvTranslations\Commands\PullFromCsvCommand;
+use AdamPatterson\LaravelCsvTranslations\Commands\PushToCsvCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
