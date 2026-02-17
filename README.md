@@ -1,4 +1,4 @@
-# This is my package laravel-csv-translations
+# Laravel CSV Translations
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/adampatterson/laravel-csv-translations.svg?style=flat-square)](https://packagist.org/packages/adampatterson/laravel-csv-translations)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/adampatterson/laravel-csv-translations/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/adampatterson/laravel-csv-translations/actions?query=workflow%3Arun-tests+branch%3Amain)
