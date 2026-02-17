@@ -21,7 +21,7 @@ class ImportFromCsvCommand extends Command
         $csvPath = $this->argument('path') ?? config('csv-translations.export_path');
 
         if (! File::exists($csvPath)) {
-            $this->error("CSV file not found at $csvPath");
+            $this->error("CSV file not found at {$csvPath}");
 
             return self::FAILURE;
         }
@@ -32,13 +32,13 @@ class ImportFromCsvCommand extends Command
             try {
                 $this->saveTranslations($path, $translations);
             } catch (JsonException $exception) {
-                $this->error("Failed to save translations for '{$path}': " . $exception->getMessage());
+                $this->error("Failed to save translations for '{$path}': ".$exception->getMessage());
 
                 return self::FAILURE;
             }
         }
 
-        $this->info("Imported translations from $csvPath");
+        $this->info("Imported translations from {$csvPath}");
 
         return self::SUCCESS;
     }
@@ -49,9 +49,9 @@ class ImportFromCsvCommand extends Command
 
         return collect(file($csvPath))
             ->skip(1) // Skip header
-            ->map(fn ($line) => str_getcsv($line))
-            ->filter(fn ($row) => count($row) >= 3)
-            ->filter(fn ($row) => ! $localeFilter || $this->extractLocale($row[0]) === $localeFilter)
+            ->map(fn($line) => str_getcsv($line))
+            ->filter(fn($row) => count($row) >= 3)
+            ->filter(fn($row) => ! $localeFilter || $this->extractLocale($row[0]) === $localeFilter)
             ->reduce(function (array $output, array $row) {
                 [$path, $key, $original, $new] = array_pad($row, 4, '');
                 $translation = $new !== '' ? $new : $original;

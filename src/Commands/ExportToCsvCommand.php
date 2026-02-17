@@ -23,7 +23,7 @@ class ExportToCsvCommand extends Command
         $langPath = lang_path();
 
         if (! File::isDirectory($langPath)) {
-            $this->error("The lang directory does not exist at $langPath");
+            $this->error("The lang directory does not exist at {$langPath}");
 
             return self::FAILURE;
         }
@@ -37,7 +37,7 @@ class ExportToCsvCommand extends Command
             return self::FAILURE;
         }
 
-        $this->info("Exported translations to $csvPath");
+        $this->info("Exported translations to {$csvPath}");
 
         return self::SUCCESS;
     }
