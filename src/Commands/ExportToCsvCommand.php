@@ -15,7 +15,7 @@ class ExportToCsvCommand extends Command
                             {--l|locales= : Comma separated list of locales to export}
                             {--a|all : Export all locales}';
 
-    protected $description = 'Push all published translations to CSV file.';
+    protected $description = 'Export all published translations to CSV file.';
 
     public function handle(): int
     {
