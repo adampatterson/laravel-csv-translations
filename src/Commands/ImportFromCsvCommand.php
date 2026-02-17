@@ -67,13 +67,63 @@ class ImportFromCsvCommand extends Command
     }
 
     /**
+     * Sanitize and validate a relative translation path from CSV input.
+     * Returns a safe relative path (without extension) or null if invalid.
+     */
+    protected function sanitizeTranslationPath(string $path): ?string
+    {
+        // Normalize directory separators and trim whitespace
+        $normalized = str_replace('\\', '/', trim($path));
+
+        // Disallow empty paths
+        if ($normalized === '') {
+            return null;
+        }
+
+        // Disallow absolute paths
+        if (strpos($normalized, '/') === 0) {
+            return null;
+        }
+
+        // Resolve segments and detect traversal
+        $segments   = explode('/', $normalized);
+        $safeParts  = [];
+        foreach ($segments as $segment) {
+            if ($segment === '' || $segment === '.') {
+                continue;
+            }
+            if ($segment === '..') {
+                // Directory traversal attempt
+                return null;
+            }
+            $safeParts[] = $segment;
+        }
+
+        if (empty($safeParts)) {
+            return null;
+        }
+
+        return implode('/', $safeParts);
+    }
+
+    /**
      * @throws JsonException
      */
     protected function saveTranslations(string $path, array $translations): void
     {
-        $extension = $this->option('json') ? 'json' : 'php';
-        $fullPath = lang_path("$path.$extension");
+        $sanitizedPath = $this->sanitizeTranslationPath($path);
 
+        if ($sanitizedPath === null) {
+            $this->error("Skipped invalid translation path: {$path}");
+
+            return;
+        }
+
+        $extension    = $this->option('json') ? 'json' : 'php';
+        $baseLangPath = lang_path();
+        $fullPath     = $baseLangPath.DIRECTORY_SEPARATOR.$sanitizedPath.'.'.$extension;
+
+        // Ensure the target directory exists
         File::ensureDirectoryExists(dirname($fullPath));
 
         $content = $this->option('json')
