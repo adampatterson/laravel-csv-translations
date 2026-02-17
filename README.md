@@ -42,6 +42,23 @@ return [
 
 ## Usage
 
+### Publishing Translations
+
+By default, the Laravel application skeleton does not include the lang directory. If you would like to customize Laravel's language files, you may publish them via the
+`lang:publish` Artisan command.
+
+Further, you can also publish translations from any vendor package that has published its translations. To do this, use the `--vendor` (or `-v`) option with the package name:
+
+```bash
+php artisan lang:publish --vendor=vendor/package
+```
+
+For example, Filament's translations can be published with:
+
+```bash
+php artisan vendor:publish --tag=filament-translations
+```
+
 ### Exporting Translations
 
 To export your translations to a CSV file, use the `translation:export` command:
