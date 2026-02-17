@@ -32,7 +32,7 @@ class ImportFromCsvCommand extends Command
             try {
                 $this->saveTranslations($path, $translations);
             } catch (JsonException $exception) {
-                $this->error("Failed to save translations for '{$path}': " . $exception->getMessage());
+                $this->error("Failed to save translations for '{$path}': ".$exception->getMessage());
 
                 return self::FAILURE;
             }
