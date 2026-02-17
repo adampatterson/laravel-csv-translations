@@ -43,9 +43,9 @@ class ImportFromCsvCommand extends Command
 
         return collect(file($csvPath))
             ->skip(1) // Skip header
-            ->map(fn($line) => str_getcsv($line))
-            ->filter(fn($row) => count($row) >= 3)
-            ->filter(fn($row) => ! $localeFilter || $this->extractLocale($row[0]) === $localeFilter)
+            ->map(fn ($line) => str_getcsv($line))
+            ->filter(fn ($row) => count($row) >= 3)
+            ->filter(fn ($row) => ! $localeFilter || $this->extractLocale($row[0]) === $localeFilter)
             ->reduce(function (array $output, array $row) {
                 [$path, $key, $original, $new] = array_pad($row, 4, '');
                 $translation = $new !== '' ? $new : $original;
