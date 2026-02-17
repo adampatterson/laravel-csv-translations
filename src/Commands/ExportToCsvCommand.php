@@ -107,7 +107,7 @@ class ExportToCsvCommand extends Command
             ->all();
     }
 
-    protected function writeCsv(string $csvPath, array $rows): ?int
+    protected function writeCsv(string $csvPath, array $rows): int
     {
         File::ensureDirectoryExists(dirname($csvPath));
 

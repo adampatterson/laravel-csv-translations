@@ -2,8 +2,8 @@
 
 namespace AdamPatterson\LaravelCsvTranslations;
 
-use AdamPatterson\LaravelCsvTranslations\Commands\ImportFromCsvCommand;
 use AdamPatterson\LaravelCsvTranslations\Commands\ExportToCsvCommand;
+use AdamPatterson\LaravelCsvTranslations\Commands\ImportFromCsvCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
