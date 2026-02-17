@@ -59,16 +59,16 @@ it('can filter exported translations by locale', function () {
 
     // Test exporting only 'fr' and 'es'
     $this->artisan('translation:export', [
-        'path' => $csvPath,
+        'path'      => $csvPath,
         '--locales' => 'fr,es',
     ])->assertExitCode(0);
 
     $rows = array_map('str_getcsv', file($csvPath));
     $paths = array_column($rows, 0);
 
-    expect($paths)->toContain('fr/test');
-    expect($paths)->toContain('vendor/package/es/test');
-    expect($paths)->not->toContain('en/test');
+    expect($paths)->toContain('fr/test')
+        ->and($paths)->toContain('vendor/package/es/test')
+        ->and($paths)->not->toContain('en/test');
 
     // Cleanup
     File::delete($csvPath);
@@ -85,15 +85,15 @@ it('can export all translations', function () {
     $csvPath = base_path('all_test.csv');
 
     $this->artisan('translation:export', [
-        'path' => $csvPath,
+        'path'  => $csvPath,
         '--all' => true,
     ])->assertExitCode(0);
 
     $rows = array_map('str_getcsv', file($csvPath));
     $paths = array_column($rows, 0);
 
-    expect($paths)->toContain('en/test');
-    expect($paths)->toContain('fr/test');
+    expect($paths)->toContain('en/test')
+        ->and($paths)->toContain('fr/test');
 
     // Cleanup
     File::delete($csvPath);
@@ -116,8 +116,8 @@ it('exports only base locale by default', function () {
     $rows = array_map('str_getcsv', file($csvPath));
     $paths = array_column($rows, 0);
 
-    expect($paths)->toContain('en/test');
-    expect($paths)->not->toContain('fr/test');
+    expect($paths)->toContain('en/test')
+        ->and($paths)->not->toContain('fr/test');
 
     // Cleanup
     File::delete($csvPath);
@@ -142,7 +142,7 @@ it('can import translations from CSV', function () {
     $testTranslations = include $langPath.'/en/test.php';
     expect($testTranslations)->toBe([
         'greeting' => 'Hello',
-        'nested' => [
+        'nested'   => [
             'key' => 'Value',
         ],
     ]);
@@ -197,7 +197,7 @@ it('can import translations as JSON', function () {
 
     expect($data)->toBe([
         'greeting' => 'Hello',
-        'nested' => [
+        'nested'   => [
             'key' => 'Value',
         ],
     ]);

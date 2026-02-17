@@ -79,7 +79,8 @@ class ExportToCsvCommand extends Command
 
     protected function extractLocale(string $path): ?string
     {
-        $segments = explode(DIRECTORY_SEPARATOR, $path);
+        $normalizedPath = str_replace('\\', '/', $path);
+        $segments = explode('/', $normalizedPath);
 
         return $segments[0] === 'vendor' ? ($segments[2] ?? null) : $segments[0];
     }
@@ -98,7 +99,7 @@ class ExportToCsvCommand extends Command
             return [];
         }
 
-        $pathWithoutExtension = substr($file->getRelativePathname(), 0, -4);
+        $pathWithoutExtension = str_replace('\\', '/', substr($file->getRelativePathname(), 0, -4));
 
         return collect(Arr::dot($translations))
             ->filter(fn ($value) => is_string($value) || is_numeric($value) || is_null($value))
