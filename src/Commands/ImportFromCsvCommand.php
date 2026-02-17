@@ -29,7 +29,13 @@ class ImportFromCsvCommand extends Command
         $output = $this->parseCsvFile($csvPath);
 
         foreach ($output as $path => $translations) {
-            $this->saveTranslations($path, $translations);
+            try {
+                $this->saveTranslations($path, $translations);
+            } catch (JsonException $exception) {
+                $this->error("Failed to save translations for '{$path}': " . $exception->getMessage());
+
+                return self::FAILURE;
+            }
         }
 
         $this->info("Imported translations from $csvPath");
