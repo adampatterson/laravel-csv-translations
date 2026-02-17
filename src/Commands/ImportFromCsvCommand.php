@@ -7,9 +7,9 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 use JsonException;
 
-class PullFromCsvCommand extends Command
+class ImportFromCsvCommand extends Command
 {
-    protected $signature = 'translation:pull 
+    protected $signature = 'translation:import 
                             {path? : The path to the CSV file} 
                             {--json : Export as JSON instead of PHP}
                             {--locale= : Import a specific locale}';

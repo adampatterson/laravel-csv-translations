@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\File;
 use Symfony\Component\Finder\SplFileInfo;
 use Throwable;
 
-class PushToCsvCommand extends Command
+class ExportToCsvCommand extends Command
 {
-    protected $signature = 'translation:push 
+    protected $signature = 'translation:export 
                             {path? : The path to the CSV file}
                             {--l|locales= : Comma separated list of locales to export}
                             {--a|all : Export all locales}';

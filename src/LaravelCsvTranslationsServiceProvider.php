@@ -2,8 +2,8 @@
 
 namespace AdamPatterson\LaravelCsvTranslations;
 
-use AdamPatterson\LaravelCsvTranslations\Commands\PullFromCsvCommand;
-use AdamPatterson\LaravelCsvTranslations\Commands\PushToCsvCommand;
+use AdamPatterson\LaravelCsvTranslations\Commands\ImportFromCsvCommand;
+use AdamPatterson\LaravelCsvTranslations\Commands\ExportToCsvCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -19,7 +19,7 @@ class LaravelCsvTranslationsServiceProvider extends PackageServiceProvider
         $package
             ->name('laravel-csv-translations')
             ->hasConfigFile()
-            ->hasCommand(PushToCsvCommand::class)
-            ->hasCommand(PullFromCsvCommand::class);
+            ->hasCommand(ExportToCsvCommand::class)
+            ->hasCommand(ImportFromCsvCommand::class);
     }
 }

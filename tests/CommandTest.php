@@ -29,7 +29,7 @@ it('can export translations to CSV', function () {
 
     $csvPath = base_path('test_translations.csv');
 
-    $this->artisan('translation:push', ['path' => $csvPath])
+    $this->artisan('translation:export', ['path' => $csvPath])
         ->assertExitCode(0);
 
     $this->assertFileExists($csvPath);
@@ -58,7 +58,7 @@ it('can filter exported translations by locale', function () {
     $csvPath = base_path('filter_test.csv');
 
     // Test exporting only 'fr' and 'es'
-    $this->artisan('translation:push', [
+    $this->artisan('translation:export', [
         'path' => $csvPath,
         '--locales' => 'fr,es',
     ])->assertExitCode(0);
@@ -84,7 +84,7 @@ it('can export all translations', function () {
 
     $csvPath = base_path('all_test.csv');
 
-    $this->artisan('translation:push', [
+    $this->artisan('translation:export', [
         'path' => $csvPath,
         '--all' => true,
     ])->assertExitCode(0);
@@ -110,7 +110,7 @@ it('exports only base locale by default', function () {
     $csvPath = base_path('default_test.csv');
 
     // Assuming default locale is 'en'
-    $this->artisan('translation:push', ['path' => $csvPath])
+    $this->artisan('translation:export', ['path' => $csvPath])
         ->assertExitCode(0);
 
     $rows = array_map('str_getcsv', file($csvPath));
@@ -132,7 +132,7 @@ it('can import translations from CSV', function () {
 
     File::put($csvPath, $content);
 
-    $this->artisan('translation:pull', ['path' => $csvPath])
+    $this->artisan('translation:import', ['path' => $csvPath])
         ->assertExitCode(0);
 
     $langPath = lang_path();
@@ -164,7 +164,7 @@ it('can import a specific locale', function () {
 
     File::put($csvPath, $content);
 
-    $this->artisan('translation:pull', ['path' => $csvPath, '--locale' => 'fr'])
+    $this->artisan('translation:import', ['path' => $csvPath, '--locale' => 'fr'])
         ->assertExitCode(0);
 
     $langPath = lang_path();
@@ -186,7 +186,7 @@ it('can import translations as JSON', function () {
 
     File::put($csvPath, $content);
 
-    $this->artisan('translation:pull', ['path' => $csvPath, '--json' => true])
+    $this->artisan('translation:import', ['path' => $csvPath, '--json' => true])
         ->assertExitCode(0);
 
     $langPath = lang_path();
