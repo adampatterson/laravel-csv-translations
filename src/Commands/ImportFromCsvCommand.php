@@ -86,8 +86,8 @@ class ImportFromCsvCommand extends Command
         }
 
         // Resolve segments and detect traversal
-        $segments   = explode('/', $normalized);
-        $safeParts  = [];
+        $segments = explode('/', $normalized);
+        $safeParts = [];
         foreach ($segments as $segment) {
             if ($segment === '' || $segment === '.') {
                 continue;
@@ -119,9 +119,9 @@ class ImportFromCsvCommand extends Command
             return;
         }
 
-        $extension    = $this->option('json') ? 'json' : 'php';
+        $extension = $this->option('json') ? 'json' : 'php';
         $baseLangPath = lang_path();
-        $fullPath     = $baseLangPath.DIRECTORY_SEPARATOR.$sanitizedPath.'.'.$extension;
+        $fullPath = $baseLangPath.DIRECTORY_SEPARATOR.$sanitizedPath.'.'.$extension;
 
         // Ensure the target directory exists
         File::ensureDirectoryExists(dirname($fullPath));
