@@ -4,47 +4,49 @@ namespace AdamPatterson\LaravelCsvTranslations\Tests;
 
 use Illuminate\Support\Facades\File;
 
-uses(TestCase::class);
+beforeEach(function () {
+    // Clean up lang directory before each test
+    $langPath = lang_path();
+    if (File::isDirectory($langPath)) {
+        File::deleteDirectory($langPath);
+    }
+});
+
+afterEach(function () {
+    // Clean up lang directory after each test
+    $langPath = lang_path();
+    if (File::isDirectory($langPath)) {
+        File::deleteDirectory($langPath);
+    }
+});
 
 it('can export translations to CSV', function () {
     // Setup: Create dummy translation files
     $langPath = lang_path();
-    if (! File::isDirectory($langPath)) {
-        File::makeDirectory($langPath, 0755, true);
-    }
+    File::makeDirectory($langPath.'/en', 0755, true);
 
-    $enPath = $langPath.'/en';
-    if (! File::isDirectory($enPath)) {
-        File::makeDirectory($enPath, 0755, true);
-    }
-
-    File::put($enPath.'/auth.php', "<?php return ['failed' => 'Failed', 'nested' => ['key' => 'Value']];");
+    File::put($langPath.'/en/auth.php', "<?php return ['failed' => 'Failed', 'nested' => ['key' => 'Value']];");
 
     $csvPath = base_path('test_translations.csv');
 
-    $this->artisan('translation:push', ['path' => $csvPath])
+    $this->artisan('translation:export', ['path' => $csvPath])
         ->assertExitCode(0);
 
     $this->assertFileExists($csvPath);
 
-    $content = file_get_contents($csvPath);
-    $lines = explode(PHP_EOL, trim($content));
+    $rows = array_map('str_getcsv', file($csvPath));
 
-    expect($lines)->toHaveCount(3); // Header + 2 translations
-    expect($lines[0])->toBe('Path,Key,Original,New');
-    expect($lines[1])->toBe('en/auth,failed,Failed,""');
-    expect($lines[2])->toBe('en/auth,nested.key,Value,""');
+    expect($rows)->toHaveCount(3); // Header + 2 translations
+    expect($rows[0])->toBe(['Path', 'Key', 'Original', 'New']);
+    expect($rows[1])->toBe(['en/auth', 'failed', 'Failed', '']);
+    expect($rows[2])->toBe(['en/auth', 'nested.key', 'Value', '']);
 
     // Cleanup
     File::delete($csvPath);
-    File::deleteDirectory($langPath);
 });
 
 it('can filter exported translations by locale', function () {
     $langPath = lang_path();
-    if (! File::isDirectory($langPath)) {
-        File::makeDirectory($langPath, 0755, true);
-    }
     File::makeDirectory($langPath.'/en', 0755, true);
     File::makeDirectory($langPath.'/fr', 0755, true);
     File::makeDirectory($langPath.'/vendor/package/es', 0755, true);
@@ -56,26 +58,24 @@ it('can filter exported translations by locale', function () {
     $csvPath = base_path('filter_test.csv');
 
     // Test exporting only 'fr' and 'es'
-    $this->artisan('translation:push', [
+    $this->artisan('translation:export', [
         'path' => $csvPath,
         '--locales' => 'fr,es',
     ])->assertExitCode(0);
 
-    $content = file_get_contents($csvPath);
-    expect($content)->toContain('fr/test,hello,Bonjour,""');
-    expect($content)->toContain('vendor/package/es/test,hello,Hola,""');
-    expect($content)->not->toContain('en/test,hello,Hello,""');
+    $rows = array_map('str_getcsv', file($csvPath));
+    $paths = array_column($rows, 0);
+
+    expect($paths)->toContain('fr/test')
+        ->and($paths)->toContain('vendor/package/es/test')
+        ->and($paths)->not->toContain('en/test');
 
     // Cleanup
     File::delete($csvPath);
-    File::deleteDirectory($langPath);
 });
 
 it('can export all translations', function () {
     $langPath = lang_path();
-    if (! File::isDirectory($langPath)) {
-        File::makeDirectory($langPath, 0755, true);
-    }
     File::makeDirectory($langPath.'/en', 0755, true);
     File::makeDirectory($langPath.'/fr', 0755, true);
 
@@ -84,25 +84,23 @@ it('can export all translations', function () {
 
     $csvPath = base_path('all_test.csv');
 
-    $this->artisan('translation:push', [
+    $this->artisan('translation:export', [
         'path' => $csvPath,
         '--all' => true,
     ])->assertExitCode(0);
 
-    $content = file_get_contents($csvPath);
-    expect($content)->toContain('en/test,hello,Hello,""');
-    expect($content)->toContain('fr/test,hello,Bonjour,""');
+    $rows = array_map('str_getcsv', file($csvPath));
+    $paths = array_column($rows, 0);
+
+    expect($paths)->toContain('en/test')
+        ->and($paths)->toContain('fr/test');
 
     // Cleanup
     File::delete($csvPath);
-    File::deleteDirectory($langPath);
 });
 
 it('exports only base locale by default', function () {
     $langPath = lang_path();
-    if (! File::isDirectory($langPath)) {
-        File::makeDirectory($langPath, 0755, true);
-    }
     File::makeDirectory($langPath.'/en', 0755, true);
     File::makeDirectory($langPath.'/fr', 0755, true);
 
@@ -112,16 +110,17 @@ it('exports only base locale by default', function () {
     $csvPath = base_path('default_test.csv');
 
     // Assuming default locale is 'en'
-    $this->artisan('translation:push', ['path' => $csvPath])
+    $this->artisan('translation:export', ['path' => $csvPath])
         ->assertExitCode(0);
 
-    $content = file_get_contents($csvPath);
-    expect($content)->toContain('en/test,hello,Hello,""');
-    expect($content)->not->toContain('fr/test,hello,Bonjour,""');
+    $rows = array_map('str_getcsv', file($csvPath));
+    $paths = array_column($rows, 0);
+
+    expect($paths)->toContain('en/test')
+        ->and($paths)->not->toContain('fr/test');
 
     // Cleanup
     File::delete($csvPath);
-    File::deleteDirectory($langPath);
 });
 
 it('can import translations from CSV', function () {
@@ -133,7 +132,7 @@ it('can import translations from CSV', function () {
 
     File::put($csvPath, $content);
 
-    $this->artisan('translation:pull', ['path' => $csvPath])
+    $this->artisan('translation:import', ['path' => $csvPath])
         ->assertExitCode(0);
 
     $langPath = lang_path();
@@ -155,7 +154,6 @@ it('can import translations from CSV', function () {
 
     // Cleanup
     File::delete($csvPath);
-    File::deleteDirectory($langPath);
 });
 
 it('can import a specific locale', function () {
@@ -166,7 +164,7 @@ it('can import a specific locale', function () {
 
     File::put($csvPath, $content);
 
-    $this->artisan('translation:pull', ['path' => $csvPath, '--locale' => 'fr'])
+    $this->artisan('translation:import', ['path' => $csvPath, '--locale' => 'fr'])
         ->assertExitCode(0);
 
     $langPath = lang_path();
@@ -178,7 +176,6 @@ it('can import a specific locale', function () {
 
     // Cleanup
     File::delete($csvPath);
-    File::deleteDirectory($langPath);
 });
 
 it('can import translations as JSON', function () {
@@ -189,7 +186,7 @@ it('can import translations as JSON', function () {
 
     File::put($csvPath, $content);
 
-    $this->artisan('translation:pull', ['path' => $csvPath, '--json' => true])
+    $this->artisan('translation:import', ['path' => $csvPath, '--json' => true])
         ->assertExitCode(0);
 
     $langPath = lang_path();
@@ -207,5 +204,4 @@ it('can import translations as JSON', function () {
 
     // Cleanup
     File::delete($csvPath);
-    File::deleteDirectory($langPath);
 });

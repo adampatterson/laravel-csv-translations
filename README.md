@@ -1,11 +1,12 @@
-# This is my package laravel-csv-translations
+# Laravel CSV Translations
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/adampatterson/laravel-csv-translations.svg?style=flat-square)](https://packagist.org/packages/adampatterson/laravel-csv-translations)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/adampatterson/laravel-csv-translations/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/adampatterson/laravel-csv-translations/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/adampatterson/laravel-csv-translations/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/adampatterson/laravel-csv-translations/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/adampatterson/laravel-csv-translations.svg?style=flat-square)](https://packagist.org/packages/adampatterson/laravel-csv-translations)
 
-This package allows you to export and import Laravel translations using CSV files. This makes it easy to share translations with non-technical team members or external translation services.
+This package allows you to export and import Laravel translations using CSV files. This makes it easy to share translations with non-technical team members or external
+translation services.
 
 It supports both standard Laravel language files and vendor-published translations, and can handle both PHP array and JSON formats.
 
@@ -20,7 +21,7 @@ composer require adampatterson/laravel-csv-translations
 You can publish the config file with:
 
 ```bash
-php artisan vendor:publish --tag="csv-translations-config"
+php artisan vendor:publish --tag="laravel-csv-translations"
 ```
 
 This is the contents of the published config file:
@@ -43,10 +44,10 @@ return [
 
 ### Exporting Translations
 
-To export your translations to a CSV file, use the `translation:push` command:
+To export your translations to a CSV file, use the `translation:export` command:
 
 ```bash
-php artisan translation:push
+php artisan translation:export
 ```
 
 By default, this exports the base locale (defined in `config('app.locale')`) to the path specified in your config.
@@ -55,29 +56,30 @@ By default, this exports the base locale (defined in `config('app.locale')`) to 
 
 - **Specify Path**: Provide a path as an argument to change the output location.
   ```bash
-  php artisan translation:push custom/path/translations.csv
+  php artisan translation:export custom/path/translations.csv
   ```
 - **Export All Locales**: Use the `--all` (or `-a`) flag to export every locale found in your `lang` directory.
   ```bash
-  php artisan translation:push --all
+  php artisan translation:export --all
   ```
 - **Specific Locales**: Use the `--locales` (or `-l`) option with a comma-separated list.
   ```bash
-  php artisan translation:push --locales=en,fr,es
+  php artisan translation:export --locales=en,fr,es
   ```
 
 The CSV will contain the following columns:
-1.  **Path**: The relative path to the translation file (e.g., `en/auth` or `vendor/package/en/messages`).
-2.  **Key**: The dot-notation key for the translation.
-3.  **Original**: The current translation value.
-4.  **New**: An empty column for you to provide new translations.
+
+1. **Path**: The relative path to the translation file (e.g., `en/auth` or `vendor/package/en/messages`).
+2. **Key**: The dot-notation key for the translation.
+3. **Original**: The current translation value.
+4. **New**: An empty column for you to provide new translations.
 
 ### Importing Translations
 
-To import translations from a CSV file, use the `translation:pull` command:
+To import translations from a CSV file, use the `translation:import` command:
 
 ```bash
-php artisan translation:pull
+php artisan translation:import
 ```
 
 The command will read the CSV and update your language files. If a value is present in the **New** column, it will be used; otherwise, the **Original** value is preserved.
@@ -86,15 +88,15 @@ The command will read the CSV and update your language files. If a value is pres
 
 - **Specify Path**: Provide the path to the CSV file as an argument.
   ```bash
-  php artisan translation:pull custom/path/translations.csv
+  php artisan translation:import custom/path/translations.csv
   ```
 - **Filter by Locale**: Import only a specific locale from the CSV.
   ```bash
-  php artisan translation:pull --locale=fr
+  php artisan translation:import --locale=fr
   ```
 - **Import as JSON**: Convert the translations into JSON files instead of PHP arrays.
   ```bash
-  php artisan translation:pull --json
+  php artisan translation:import --json
   ```
 
 ## Testing
@@ -107,19 +109,7 @@ composer test
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-## Security Vulnerabilities
-
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
-
 ## Credits
 
 - [Adam Patterson](https://github.com/adampatterson)
-- [All Contributors](../../contributors)
-
-## License
-
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+- [All Contributors](https://github.com/adampatterson/laravel-csv-translations/graphs/contributors)
