@@ -11,14 +11,11 @@ class ImportFromCsvCommand extends Command
 {
     protected $signature = 'translation:import 
                             {path? : The path to the CSV file} 
-                            {--json : Export as JSON instead of PHP}
+                            {--json : Import as JSON instead of PHP}
                             {--locale= : Import a specific locale}';
 
-    protected $description = 'Create updated Laravel translations from a CSV file.';
+    protected $description = 'Update Laravel translations from a CSV file.';
 
-    /**
-     * @throws JsonException
-     */
     public function handle(): int
     {
         $csvPath = $this->argument('path') ?? config('csv-translations.export_path');
@@ -46,9 +43,9 @@ class ImportFromCsvCommand extends Command
 
         return collect(file($csvPath))
             ->skip(1) // Skip header
-            ->map(fn ($line) => str_getcsv($line))
-            ->filter(fn ($row) => count($row) >= 3)
-            ->filter(fn ($row) => ! $localeFilter || $this->extractLocale($row[0]) === $localeFilter)
+            ->map(fn($line) => str_getcsv($line))
+            ->filter(fn($row) => count($row) >= 3)
+            ->filter(fn($row) => ! $localeFilter || $this->extractLocale($row[0]) === $localeFilter)
             ->reduce(function (array $output, array $row) {
                 [$path, $key, $original, $new] = array_pad($row, 4, '');
                 $translation = $new !== '' ? $new : $original;
