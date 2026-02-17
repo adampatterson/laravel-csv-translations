@@ -5,7 +5,8 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/adampatterson/laravel-csv-translations/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/adampatterson/laravel-csv-translations/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/adampatterson/laravel-csv-translations.svg?style=flat-square)](https://packagist.org/packages/adampatterson/laravel-csv-translations)
 
-This package allows you to export and import Laravel translations using CSV files. This makes it easy to share translations with non-technical team members or external translation services.
+This package allows you to export and import Laravel translations using CSV files. This makes it easy to share translations with non-technical team members or external
+translation services.
 
 It supports both standard Laravel language files and vendor-published translations, and can handle both PHP array and JSON formats.
 
@@ -20,7 +21,7 @@ composer require adampatterson/laravel-csv-translations
 You can publish the config file with:
 
 ```bash
-php artisan vendor:publish --tag="csv-translations-config"
+php artisan vendor:publish --tag="laravel-csv-translations"
 ```
 
 This is the contents of the published config file:
@@ -67,10 +68,11 @@ By default, this exports the base locale (defined in `config('app.locale')`) to 
   ```
 
 The CSV will contain the following columns:
-1.  **Path**: The relative path to the translation file (e.g., `en/auth` or `vendor/package/en/messages`).
-2.  **Key**: The dot-notation key for the translation.
-3.  **Original**: The current translation value.
-4.  **New**: An empty column for you to provide new translations.
+
+1. **Path**: The relative path to the translation file (e.g., `en/auth` or `vendor/package/en/messages`).
+2. **Key**: The dot-notation key for the translation.
+3. **Original**: The current translation value.
+4. **New**: An empty column for you to provide new translations.
 
 ### Importing Translations
 
@@ -107,19 +109,7 @@ composer test
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-## Security Vulnerabilities
-
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
-
 ## Credits
 
 - [Adam Patterson](https://github.com/adampatterson)
-- [All Contributors](../../contributors)
-
-## License
-
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+- [All Contributors](https://github.com/adampatterson/laravel-csv-translations/graphs/contributors)
