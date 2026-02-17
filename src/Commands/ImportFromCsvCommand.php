@@ -11,7 +11,7 @@ class ImportFromCsvCommand extends Command
 {
     protected $signature = 'translation:import 
                             {path? : The path to the CSV file} 
-                            {--json : Export as JSON instead of PHP}
+                            {--json : Import as JSON instead of PHP}
                             {--locale= : Import a specific locale}';
 
     protected $description = 'Create updated Laravel translations from a CSV file.';
