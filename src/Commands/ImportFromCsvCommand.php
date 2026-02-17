@@ -43,9 +43,9 @@ class ImportFromCsvCommand extends Command
 
         return collect(file($csvPath))
             ->skip(1) // Skip header
-            ->map(fn($line) => str_getcsv($line))
-            ->filter(fn($row) => count($row) >= 3)
-            ->filter(fn($row) => ! $localeFilter || $this->extractLocale($row[0]) === $localeFilter)
+            ->map(fn ($line) => str_getcsv($line))
+            ->filter(fn ($row) => count($row) >= 3)
+            ->filter(fn ($row) => ! $localeFilter || $this->extractLocale($row[0]) === $localeFilter)
             ->reduce(function (array $output, array $row) {
                 [$path, $key, $original, $new] = array_pad($row, 4, '');
                 $translation = $new !== '' ? $new : $original;
@@ -78,9 +78,27 @@ class ImportFromCsvCommand extends Command
 
         $content = $this->option('json')
             ? json_encode($translations, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
-            : '<?php'.PHP_EOL.PHP_EOL.'return '.var_export($translations, true).';'.PHP_EOL;
+            : '<?php'.PHP_EOL.PHP_EOL.'return '.$this->prettyPrintArray($translations).';'.PHP_EOL;
 
         File::put($fullPath, $content);
         $this->line("Created: $fullPath");
+    }
+
+    protected function prettyPrintArray(array $array, int $indent = 0): string
+    {
+        $result = '['.PHP_EOL;
+        $spaces = str_repeat('    ', $indent + 1);
+        foreach ($array as $key => $value) {
+            $result .= $spaces.var_export($key, true).' => ';
+            if (is_array($value)) {
+                $result .= $this->prettyPrintArray($value, $indent + 1);
+            } else {
+                $result .= var_export($value, true);
+            }
+            $result .= ','.PHP_EOL;
+        }
+        $result .= str_repeat('    ', $indent).']';
+
+        return $result;
     }
 }
