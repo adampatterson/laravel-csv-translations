@@ -58,9 +58,9 @@ class PushToCsvCommand extends Command
     protected function collectTranslations(string $langPath, array $locales): array
     {
         return collect(File::allFiles($langPath))
-            ->filter(fn(SplFileInfo $file) => $file->getExtension() === 'php')
-            ->filter(fn(SplFileInfo $file) => $this->shouldIncludeFile($file, $locales))
-            ->flatMap(fn(SplFileInfo $file) => $this->extractTranslations($file))
+            ->filter(fn (SplFileInfo $file) => $file->getExtension() === 'php')
+            ->filter(fn (SplFileInfo $file) => $this->shouldIncludeFile($file, $locales))
+            ->flatMap(fn (SplFileInfo $file) => $this->extractTranslations($file))
             ->all();
     }
 
@@ -101,8 +101,8 @@ class PushToCsvCommand extends Command
         $pathWithoutExtension = substr($file->getRelativePathname(), 0, -4);
 
         return collect(Arr::dot($translations))
-            ->filter(fn($value) => is_string($value) || is_numeric($value) || is_null($value))
-            ->map(fn($value, $key) => [$pathWithoutExtension, $key, (string)$value, ''])
+            ->filter(fn ($value) => is_string($value) || is_numeric($value) || is_null($value))
+            ->map(fn ($value, $key) => [$pathWithoutExtension, $key, (string) $value, ''])
             ->values()
             ->all();
     }
