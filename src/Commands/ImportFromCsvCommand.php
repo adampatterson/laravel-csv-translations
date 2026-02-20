@@ -46,28 +46,47 @@ class ImportFromCsvCommand extends Command
     protected function parseCsvFile(string $csvPath): array
     {
         $localeFilter = $this->option('locale');
+        $handle = fopen($csvPath, 'rb');
 
-        return collect(file($csvPath))
-            ->skip(1) // Skip header
-            ->map(fn ($line) => str_getcsv($line))
-            ->filter(fn ($row) => count($row) >= 3)
-            ->filter(fn ($row) => ! $localeFilter || $this->extractLocale($row[0]) === $localeFilter)
-            ->reduce(function (array $output, array $row) {
+        if ($handle === false) {
+            return [];
+        }
+
+        try {
+            // Skip header row
+            fgetcsv($handle, 0, ',', '"', '\\');
+
+            $output = [];
+
+            while (($row = fgetcsv($handle, 0, ',', '"', '\\')) !== false) {
+                if (count($row) < 3) {
+                    continue;
+                }
+
+                if ($localeFilter && $this->extractLocale($row[0]) !== $localeFilter) {
+                    continue;
+                }
+
                 [$path, $key, $original, $new] = array_pad($row, 4, '');
                 $translation = $new !== '' ? $new : $original;
 
                 if (! isset($output[$path])) {
                     $output[$path] = [];
                 }
-                Arr::set($output[$path], $key, $translation);
 
-                return $output;
-            }, []);
+                Arr::set($output[$path], $key, $translation);
+            }
+
+            return $output;
+        } finally {
+            fclose($handle);
+        }
     }
 
     protected function extractLocale(string $path): ?string
     {
-        $segments = explode('/', $path);
+        $normalizedPath = str_replace('\\', '/', $path);
+        $segments = explode('/', $normalizedPath);
 
         return $segments[0] === 'vendor' ? ($segments[2] ?? null) : $segments[0];
     }
