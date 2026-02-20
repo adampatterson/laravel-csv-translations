@@ -231,3 +231,24 @@ it('can import translations as JSON', function () {
     // Cleanup
     File::delete($csvPath);
 });
+
+it('can import translations with multiline CSV values', function () {
+    $csvPath = base_path('import_multiline_test.csv');
+    $content = "Path,Key,Original,New\n";
+    $content .= "en/test,greeting,\"Hello\nWorld\",\"Bonjour\nMonde\"\n";
+
+    File::put($csvPath, $content);
+
+    $this->artisan('translation:import', ['path' => $csvPath])
+        ->assertExitCode(0);
+
+    $langPath = lang_path();
+    $this->assertFileExists($langPath.'/en/test.php');
+
+    $testTranslations = include $langPath.'/en/test.php';
+    expect($testTranslations)->toBe([
+        'greeting' => "Bonjour\nMonde",
+    ]);
+
+    File::delete($csvPath);
+});
