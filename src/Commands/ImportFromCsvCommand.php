@@ -67,7 +67,8 @@ class ImportFromCsvCommand extends Command
 
     protected function extractLocale(string $path): ?string
     {
-        $segments = explode('/', $path);
+        $normalizedPath = str_replace('\\', '/', $path);
+        $segments = explode('/', $normalizedPath);
 
         return $segments[0] === 'vendor' ? ($segments[2] ?? null) : $segments[0];
     }
