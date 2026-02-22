@@ -27,5 +27,8 @@
         <include>
             <directory suffix=".php">./src</directory>
         </include>
+        <exclude>
+            <file>./src/Facades/LaravelCsvTranslations.php</file>
+        </exclude>
     </source>
 </phpunit>
