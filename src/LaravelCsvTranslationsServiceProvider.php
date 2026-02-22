@@ -20,6 +20,7 @@ class LaravelCsvTranslationsServiceProvider extends PackageServiceProvider
             ->name('laravel-csv-translations')
             ->hasConfigFile()
             ->hasCommand(ExportToCsvCommand::class)
-            ->hasCommand(ImportFromCsvCommand::class);
+            ->hasCommand(ImportFromCsvCommand::class)
+            ->hasTranslations();
     }
 }

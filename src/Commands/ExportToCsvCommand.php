@@ -15,7 +15,13 @@ class ExportToCsvCommand extends Command
                             {--l|locales= : Comma separated list of locales to export}
                             {--a|all : Export all locales}';
 
-    protected $description = 'Export all published translations to CSV file.';
+    protected $description;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->setDescription(trans('csv-translations::command.export.description'));
+    }
 
     public function handle(): int
     {
@@ -23,7 +29,7 @@ class ExportToCsvCommand extends Command
         $langPath = lang_path();
 
         if (! File::isDirectory($langPath)) {
-            $this->error("The lang directory does not exist at {$langPath}");
+            $this->error(trans('csv-translations::command.export.lang_directory_does_not_exist', ['path' => $csvPath]));
 
             return self::FAILURE;
         }
@@ -37,7 +43,7 @@ class ExportToCsvCommand extends Command
             return self::FAILURE;
         }
 
-        $this->info("Exported translations to {$csvPath}");
+        $this->info(trans('csv-translations::csv-translations::command.export.exported_translations', ['path' => $csvPath]));
 
         return self::SUCCESS;
     }
@@ -51,7 +57,7 @@ class ExportToCsvCommand extends Command
         $localesOption = $this->option('locales');
 
         return $localesOption
-            ? array_map('trim', explode(',', $localesOption))
+            ? array_map('trim', explode(',', string: $localesOption))
             : [config('app.locale')];
     }
 
@@ -90,7 +96,7 @@ class ExportToCsvCommand extends Command
         try {
             $translations = File::getRequire($file->getPathname());
         } catch (Throwable) {
-            $this->warn("Could not load translation file: {$file->getPathname()}");
+            $this->warn(trans('csv-translations::command.export.could_not_load_translation_file', ['file' => $file->getPathname()]));
 
             return [];
         }
@@ -114,7 +120,7 @@ class ExportToCsvCommand extends Command
 
         $handle = fopen($csvPath, 'wb');
         if ($handle === false) {
-            $this->error("Could not open file for writing: {$csvPath}");
+            $this->error(trans('csv-translations::command.export.could_not_open_file', ['path' => $csvPath]));
 
             return self::FAILURE;
         }
