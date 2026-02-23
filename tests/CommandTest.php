@@ -341,3 +341,37 @@ it('handles Windows-style backslash paths in CSV import', function () {
     // Cleanup
     File::delete($csvPath);
 });
+
+it('preserves multi-line translation strings through CSV round-trip', function () {
+    $langPath = lang_path();
+    File::makeDirectory($langPath.'/en', 0755, true);
+
+    $multiLineValue = "Welcome to our site.\nPlease read the terms below.\nThank you!";
+    $paragraphValue = "Dear :name,\n\nYour order #:id has been confirmed.\nWe will notify you when it ships.\n\nBest regards,\nThe Team";
+
+    File::put($langPath.'/en/emails.php', "<?php return [
+        'welcome' => 'Welcome to our site.\nPlease read the terms below.\nThank you!',
+        'order_confirmation' => 'Dear :name,\n\nYour order #:id has been confirmed.\nWe will notify you when it ships.\n\nBest regards,\nThe Team',
+    ];");
+
+    $csvPath = base_path('multiline_test.csv');
+
+    // Export
+    $this->artisan('translation:export', ['path' => $csvPath])
+        ->assertExitCode(0);
+
+    // Clean lang dir to simulate fresh import
+    File::deleteDirectory($langPath);
+
+    // Import
+    $this->artisan('translation:import', ['path' => $csvPath])
+        ->assertExitCode(0);
+
+    $translations = include $langPath.'/en/emails.php';
+
+    expect($translations['welcome'])->toBe($multiLineValue)
+        ->and($translations['order_confirmation'])->toBe($paragraphValue);
+
+    // Cleanup
+    File::delete($csvPath);
+});
