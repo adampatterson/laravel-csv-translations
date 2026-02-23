@@ -85,7 +85,8 @@ class ExportToCsvCommand extends Command
 
     protected function extractLocale(string $path): ?string
     {
-        $normalizedPath = str_replace('\\', '/', $path);
+        // Normalize directory separators and trim whitespace
+        $normalizedPath = str_replace('\\', '/', trim($path));
         $segments = explode('/', $normalizedPath);
 
         return $segments[0] === 'vendor' ? ($segments[2] ?? null) : $segments[0];
