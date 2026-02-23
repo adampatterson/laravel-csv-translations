@@ -6,6 +6,8 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 use JsonException;
+use League\Csv\Reader;
+use League\Csv\UnavailableStream;
 
 class ImportFromCsvCommand extends Command
 {
@@ -16,6 +18,8 @@ class ImportFromCsvCommand extends Command
 
     protected $description;
 
+    protected $localeFilter;
+
     public function __construct()
     {
         parent::__construct();
@@ -25,6 +29,7 @@ class ImportFromCsvCommand extends Command
     public function handle(): int
     {
         $csvPath = $this->argument('path') ?? config('csv-translations.export_path');
+        $this->localeFilter = $this->option('locale');
 
         if (! File::exists($csvPath)) {
             $this->error(trans('csv-translations::command.import.csv_file_not_found', ['path' => $csvPath]));
@@ -47,7 +52,7 @@ class ImportFromCsvCommand extends Command
             }
         }
 
-        $this->info(trans('csv-translations::command.import.imported_translations'));
+        $this->info(trans('csv-translations::command.import.imported_translations', ['path' => $csvPath]));
 
         return self::SUCCESS;
     }
@@ -56,13 +61,28 @@ class ImportFromCsvCommand extends Command
     {
         $localeFilter = $this->option('locale');
 
-        return collect(file($csvPath))
-            ->skip(1) // Skip header
-            ->map(fn ($line) => str_getcsv($line))
-            ->filter(fn ($row) => count($row) >= 3)
-            ->filter(fn ($row) => ! $localeFilter || $this->extractLocale($row[0]) === $localeFilter)
+        try {
+            $csv = Reader::from($csvPath);
+            $csv->setHeaderOffset(0);
+
+            $records = $csv->getRecords();
+        } catch (UnavailableStream $exception) {
+            $this->error(trans('csv-translations::command.import.error_reading_csv_file', [
+                'path' => $csvPath,
+                'error' => $exception->getMessage(),
+            ]));
+
+            return [];
+        }
+
+        return collect($records)
+            ->filter(fn ($row) => isset($row['Path'], $row['Key'], $row['Original']))
+            ->filter(fn ($row) => ! $localeFilter || $this->extractLocale($row['Path']) === $localeFilter)
             ->reduce(function (array $output, array $row) {
-                [$path, $key, $original, $new] = array_pad($row, 4, '');
+                $path = $row['Path'] ?? '';
+                $key = $row['Key'] ?? '';
+                $original = $row['Original'] ?? '';
+                $new = $row['New'] ?? '';
                 $translation = $new !== '' ? $new : $original;
 
                 if (! isset($output[$path])) {
@@ -76,9 +96,13 @@ class ImportFromCsvCommand extends Command
 
     protected function extractLocale(string $path): ?string
     {
-        $segments = explode('/', $path);
+        // Normalize backslashes to slashes for locale extraction
+        $normalized = str_replace('\\', '/', trim($path));
+        $segments = explode('/', $normalized);
 
-        return $segments[0] === 'vendor' ? ($segments[2] ?? null) : $segments[0];
+        $locale = $segments[0] === 'vendor' ? ($segments[2] ?? null) : $segments[0];
+
+        return $locale ? strtolower(trim($locale)) : null;
     }
 
     /**

@@ -210,12 +210,15 @@ it('preserves single and double quotes through CSV round-trip', function () {
     $langPath = lang_path();
     File::makeDirectory($langPath.'/en', 0755, true);
 
-    File::put($langPath.'/en/quotes.php', "<?php return [
+    File::put(
+        $langPath.'/en/quotes.php',
+        "<?php return [
         'single' => 'It\\'s a test',
         'double' => 'She said \"hello\"',
         'mixed' => 'It\\'s a \"test\" value',
         'apostrophe' => 'Don\\'t stop',
-    ];");
+    ];"
+    );
 
     $csvPath = base_path('quotes_test.csv');
 
@@ -245,12 +248,15 @@ it('preserves parameter placeholders through CSV round-trip', function () {
     $langPath = lang_path();
     File::makeDirectory($langPath.'/en', 0755, true);
 
-    File::put($langPath.'/en/messages.php', "<?php return [
+    File::put(
+        $langPath.'/en/messages.php',
+        "<?php return [
         'welcome' => 'Welcome, :name!',
         'order' => 'Order :id shipped to :address',
         'count' => ':count items in :category',
         'upper' => 'Hello :NAME, welcome to :APP',
-    ];");
+    ];"
+    );
 
     $csvPath = base_path('params_test.csv');
 
@@ -280,11 +286,14 @@ it('preserves pluralization strings through CSV round-trip', function () {
     $langPath = lang_path();
     File::makeDirectory($langPath.'/en', 0755, true);
 
-    File::put($langPath.'/en/plural.php', "<?php return [
+    File::put(
+        $langPath.'/en/plural.php',
+        "<?php return [
         'apples' => 'There is one apple|There are many apples',
         'items' => '{0} No items|{1} One item|[2,*] :count items',
         'minutes' => '{1} :value minute ago|[2,*] :value minutes ago',
-    ];");
+    ];"
+    );
 
     $csvPath = base_path('plural_test.csv');
 
@@ -309,7 +318,36 @@ it('preserves pluralization strings through CSV round-trip', function () {
     File::delete($csvPath);
 });
 
-it('handles Windows-style backslash paths in CSV import', function () {
+it('can import a specific locale with windows-style paths in CSV', function () {
+    $csvPath = base_path('import_locale_windows_test.csv');
+    $content = "Path,Key,Original,New\n";
+    $content .= "en\\test,greeting,Old Hello,Hello\n";
+    $content .= "fr\\test,greeting,Old Bonjour,Bonjour\n";
+    $content .= "vendor\\package\\fr\\modal,close,Old Close,Close\n";
+
+    File::put($csvPath, $content);
+
+    $this->artisan('translation:import', [
+        'path' => $csvPath,
+        '--locale' => 'fr',
+    ])
+        ->assertExitCode(0);
+
+    $langPath = lang_path();
+    $this->assertFileDoesNotExist($langPath.'/en/test.php');
+    $this->assertFileExists($langPath.'/fr/test.php');
+    $this->assertFileExists($langPath.'/vendor/package/fr/modal.php');
+
+    $frTranslations = include $langPath.'/fr/test.php';
+    expect($frTranslations)->toBe(['greeting' => 'Bonjour']);
+
+    $vendorTranslations = include $langPath.'/vendor/package/fr/modal.php';
+    expect($vendorTranslations)->toBe(['close' => 'Close']);
+
+    File::delete($csvPath);
+});
+
+it('can import windows-style paths in CSV', function () {
     $csvPath = base_path('windows_path_test.csv');
     $content = "Path,Key,Original,New\n";
     $content .= "en\\test,greeting,Old Hello,Hello\n";
@@ -318,7 +356,9 @@ it('handles Windows-style backslash paths in CSV import', function () {
 
     File::put($csvPath, $content);
 
-    $this->artisan('translation:import', ['path' => $csvPath])
+    $this->artisan('translation:import', [
+        'path' => $csvPath,
+    ])
         ->assertExitCode(0);
 
     $langPath = lang_path();
@@ -349,10 +389,13 @@ it('preserves multi-line translation strings through CSV round-trip', function (
     $multiLineValue = "Welcome to our site.\nPlease read the terms below.\nThank you!";
     $paragraphValue = "Dear :name,\n\nYour order #:id has been confirmed.\nWe will notify you when it ships.\n\nBest regards,\nThe Team";
 
-    File::put($langPath.'/en/emails.php', "<?php return [
+    File::put(
+        $langPath.'/en/emails.php',
+        "<?php return [
         'welcome' => 'Welcome to our site.\nPlease read the terms below.\nThank you!',
         'order_confirmation' => 'Dear :name,\n\nYour order #:id has been confirmed.\nWe will notify you when it ships.\n\nBest regards,\nThe Team',
-    ];");
+    ];"
+    );
 
     $csvPath = base_path('multiline_test.csv');
 
