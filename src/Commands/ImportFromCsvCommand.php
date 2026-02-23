@@ -14,14 +14,20 @@ class ImportFromCsvCommand extends Command
                             {--json : Import as JSON instead of PHP}
                             {--locale= : Import a specific locale}';
 
-    protected $description = 'Update Laravel translations from a CSV file.';
+    protected $description;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->setDescription(trans('csv-translations::command.import.description'));
+    }
 
     public function handle(): int
     {
         $csvPath = $this->argument('path') ?? config('csv-translations.export_path');
 
         if (! File::exists($csvPath)) {
-            $this->error("CSV file not found at {$csvPath}");
+            $this->error(trans('csv-translations::command.import.csv_file_not_found', ['path' => $csvPath]));
 
             return self::FAILURE;
         }
@@ -32,13 +38,16 @@ class ImportFromCsvCommand extends Command
             try {
                 $this->saveTranslations($path, $translations);
             } catch (JsonException $exception) {
-                $this->error("Failed to save translations for '{$path}': ".$exception->getMessage());
+                $this->error(trans('csv-translations::command.import.failed_to_save_translations', [
+                    'path' => $csvPath,
+                    'error' => $exception->getMessage(),
+                ]));
 
                 return self::FAILURE;
             }
         }
 
-        $this->info("Imported translations from {$csvPath}");
+        $this->info(trans('csv-translations::command.import.imported_translations'));
 
         return self::SUCCESS;
     }
@@ -120,7 +129,7 @@ class ImportFromCsvCommand extends Command
         $sanitizedPath = $this->sanitizeTranslationPath($path);
 
         if ($sanitizedPath === null) {
-            $this->error("Skipped invalid translation path: {$path}");
+            $this->error(trans('csv-translations::command.import.skipped_invalid_translation_path', ['path' => $path]));
 
             return;
         }

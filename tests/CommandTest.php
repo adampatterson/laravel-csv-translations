@@ -5,7 +5,7 @@ namespace AdamPatterson\LaravelCsvTranslations\Tests;
 use Illuminate\Support\Facades\File;
 
 beforeEach(function () {
-    // Clean up lang directory before each test
+    // Clean up the lang directory before each test
     $langPath = lang_path();
     if (File::isDirectory($langPath)) {
         File::deleteDirectory($langPath);
@@ -13,7 +13,7 @@ beforeEach(function () {
 });
 
 afterEach(function () {
-    // Clean up lang directory after each test
+    // Clean up the lang directory after each test
     $langPath = lang_path();
     if (File::isDirectory($langPath)) {
         File::deleteDirectory($langPath);
