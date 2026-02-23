@@ -205,3 +205,139 @@ it('can import translations as JSON', function () {
     // Cleanup
     File::delete($csvPath);
 });
+
+it('preserves single and double quotes through CSV round-trip', function () {
+    $langPath = lang_path();
+    File::makeDirectory($langPath.'/en', 0755, true);
+
+    File::put($langPath.'/en/quotes.php', "<?php return [
+        'single' => 'It\\'s a test',
+        'double' => 'She said \"hello\"',
+        'mixed' => 'It\\'s a \"test\" value',
+        'apostrophe' => 'Don\\'t stop',
+    ];");
+
+    $csvPath = base_path('quotes_test.csv');
+
+    // Export
+    $this->artisan('translation:export', ['path' => $csvPath])
+        ->assertExitCode(0);
+
+    // Clean lang dir to simulate fresh import
+    File::deleteDirectory($langPath);
+
+    // Import
+    $this->artisan('translation:import', ['path' => $csvPath])
+        ->assertExitCode(0);
+
+    $translations = include $langPath.'/en/quotes.php';
+
+    expect($translations['single'])->toBe("It's a test")
+        ->and($translations['double'])->toBe('She said "hello"')
+        ->and($translations['mixed'])->toBe("It's a \"test\" value")
+        ->and($translations['apostrophe'])->toBe("Don't stop");
+
+    // Cleanup
+    File::delete($csvPath);
+});
+
+it('preserves parameter placeholders through CSV round-trip', function () {
+    $langPath = lang_path();
+    File::makeDirectory($langPath.'/en', 0755, true);
+
+    File::put($langPath.'/en/messages.php', "<?php return [
+        'welcome' => 'Welcome, :name!',
+        'order' => 'Order :id shipped to :address',
+        'count' => ':count items in :category',
+        'upper' => 'Hello :NAME, welcome to :APP',
+    ];");
+
+    $csvPath = base_path('params_test.csv');
+
+    // Export
+    $this->artisan('translation:export', ['path' => $csvPath])
+        ->assertExitCode(0);
+
+    // Clean lang dir to simulate fresh import
+    File::deleteDirectory($langPath);
+
+    // Import
+    $this->artisan('translation:import', ['path' => $csvPath])
+        ->assertExitCode(0);
+
+    $translations = include $langPath.'/en/messages.php';
+
+    expect($translations['welcome'])->toBe('Welcome, :name!')
+        ->and($translations['order'])->toBe('Order :id shipped to :address')
+        ->and($translations['count'])->toBe(':count items in :category')
+        ->and($translations['upper'])->toBe('Hello :NAME, welcome to :APP');
+
+    // Cleanup
+    File::delete($csvPath);
+});
+
+it('preserves pluralization strings through CSV round-trip', function () {
+    $langPath = lang_path();
+    File::makeDirectory($langPath.'/en', 0755, true);
+
+    File::put($langPath.'/en/plural.php', "<?php return [
+        'apples' => 'There is one apple|There are many apples',
+        'items' => '{0} No items|{1} One item|[2,*] :count items',
+        'minutes' => '{1} :value minute ago|[2,*] :value minutes ago',
+    ];");
+
+    $csvPath = base_path('plural_test.csv');
+
+    // Export
+    $this->artisan('translation:export', ['path' => $csvPath])
+        ->assertExitCode(0);
+
+    // Clean lang dir to simulate fresh import
+    File::deleteDirectory($langPath);
+
+    // Import
+    $this->artisan('translation:import', ['path' => $csvPath])
+        ->assertExitCode(0);
+
+    $translations = include $langPath.'/en/plural.php';
+
+    expect($translations['apples'])->toBe('There is one apple|There are many apples')
+        ->and($translations['items'])->toBe('{0} No items|{1} One item|[2,*] :count items')
+        ->and($translations['minutes'])->toBe('{1} :value minute ago|[2,*] :value minutes ago');
+
+    // Cleanup
+    File::delete($csvPath);
+});
+
+it('handles Windows-style backslash paths in CSV import', function () {
+    $csvPath = base_path('windows_path_test.csv');
+    $content = "Path,Key,Original,New\n";
+    $content .= "en\\test,greeting,Old Hello,Hello\n";
+    $content .= "en\\test,nested.key,Old Value,Nested Value\n";
+    $content .= "vendor\\package\\en\\modal,close,Old Close,Close\n";
+
+    File::put($csvPath, $content);
+
+    $this->artisan('translation:import', ['path' => $csvPath])
+        ->assertExitCode(0);
+
+    $langPath = lang_path();
+    $this->assertFileExists($langPath.'/en/test.php');
+    $this->assertFileExists($langPath.'/vendor/package/en/modal.php');
+
+    $testTranslations = include $langPath.'/en/test.php';
+    expect($testTranslations)->toBe([
+        'greeting' => 'Hello',
+        'nested'   => [
+            'key' => 'Nested Value',
+        ],
+    ]);
+
+    $vendorTranslations = include $langPath.'/vendor/package/en/modal.php';
+    expect($vendorTranslations)->toBe([
+        'close' => 'Close',
+    ]);
+
+    // Cleanup
+    File::delete($csvPath);
+});
