@@ -59,7 +59,7 @@ it('can filter exported translations by locale', function () {
 
     // Test exporting only 'fr' and 'es'
     $this->artisan('translation:export', [
-        'path'      => $csvPath,
+        'path' => $csvPath,
         '--locales' => 'fr,es',
     ])->assertExitCode(0);
 
@@ -85,7 +85,7 @@ it('can export all translations', function () {
     $csvPath = base_path('all_test.csv');
 
     $this->artisan('translation:export', [
-        'path'  => $csvPath,
+        'path' => $csvPath,
         '--all' => true,
     ])->assertExitCode(0);
 
@@ -142,7 +142,7 @@ it('can import translations from CSV', function () {
     $testTranslations = include $langPath.'/en/test.php';
     expect($testTranslations)->toBe([
         'greeting' => 'Hello',
-        'nested'   => [
+        'nested' => [
             'key' => 'Value',
         ],
     ]);
@@ -197,7 +197,7 @@ it('can import translations as JSON', function () {
 
     expect($data)->toBe([
         'greeting' => 'Hello',
-        'nested'   => [
+        'nested' => [
             'key' => 'Value',
         ],
     ]);
