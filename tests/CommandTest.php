@@ -328,7 +328,7 @@ it('handles Windows-style backslash paths in CSV import', function () {
     $testTranslations = include $langPath.'/en/test.php';
     expect($testTranslations)->toBe([
         'greeting' => 'Hello',
-        'nested'   => [
+        'nested' => [
             'key' => 'Nested Value',
         ],
     ]);
