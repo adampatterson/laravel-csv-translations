@@ -178,6 +178,32 @@ it('can import a specific locale', function () {
     File::delete($csvPath);
 });
 
+it('can import a specific locale with windows-style paths', function () {
+    $csvPath = base_path('import_locale_windows_test.csv');
+    $content = "Path,Key,Original,New\n";
+    $content .= "en\\test,greeting,Old Hello,Hello\n";
+    $content .= "fr\\test,greeting,Old Bonjour,Bonjour\n";
+    $content .= "vendor\\package\\fr\\modal,close,Old Close,Close\n";
+
+    File::put($csvPath, $content);
+
+    $this->artisan('translation:import', ['path' => $csvPath, '--locale' => 'fr'])
+        ->assertExitCode(0);
+
+    $langPath = lang_path();
+    $this->assertFileDoesNotExist($langPath.'/en/test.php');
+    $this->assertFileExists($langPath.'/fr/test.php');
+    $this->assertFileExists($langPath.'/vendor/package/fr/modal.php');
+
+    $frTranslations = include $langPath.'/fr/test.php';
+    expect($frTranslations)->toBe(['greeting' => 'Bonjour']);
+
+    $vendorTranslations = include $langPath.'/vendor/package/fr/modal.php';
+    expect($vendorTranslations)->toBe(['close' => 'Close']);
+
+    File::delete($csvPath);
+});
+
 it('can import translations as JSON', function () {
     $csvPath = base_path('import_test.csv');
     $content = "Path,Key,Original,New\n";
@@ -203,5 +229,26 @@ it('can import translations as JSON', function () {
     ]);
 
     // Cleanup
+    File::delete($csvPath);
+});
+
+it('can import translations with multiline CSV values', function () {
+    $csvPath = base_path('import_multiline_test.csv');
+    $content = "Path,Key,Original,New\n";
+    $content .= "en/test,greeting,\"Hello\nWorld\",\"Bonjour\nMonde\"\n";
+
+    File::put($csvPath, $content);
+
+    $this->artisan('translation:import', ['path' => $csvPath])
+        ->assertExitCode(0);
+
+    $langPath = lang_path();
+    $this->assertFileExists($langPath.'/en/test.php');
+
+    $testTranslations = include $langPath.'/en/test.php';
+    expect($testTranslations)->toBe([
+        'greeting' => "Bonjour\nMonde",
+    ]);
+
     File::delete($csvPath);
 });
